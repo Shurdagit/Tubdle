@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tunnelbanedle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* FÄRGPALETT FRÅN BILDEN (JOTUN) */
+    :root {
+      --dusk-green: #b4bca4;
+      --varluft: #d6d1aa;
+      --kokos: #e7e1d3;
+      --cheerful-peach: #f4ceab;
+      --bella: #d48c70;
+      --lavender-touch: #b9b3b4;
+      --space: #dad5ca;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      /* BAKGRUNDSBILD TILLAGD HÄR */
+      background: url('tunnelbadabild.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      /* Mörkt läge anpassat så bakgrundsbilden fortfarande syns */
+      body { color: #eee; }
+      .game-card { background: rgba(40, 40, 40, 0.95); border-color: var(--lavender-touch); }
+      .station-input { background: rgba(30, 30, 30, 0.9); color: #eee; border-color: #444; }
+      .guess-btn { background: var(--bella); }
+      .autocomplete-list { background: rgba(30, 30, 30, 0.95); border-color: #444; }
+      .autocomplete-item { color: #000000; } /* Texten förblir svart enligt önskemål */
+      .autocomplete-item:hover { background: var(--dusk-green); }
+      .hint-chip { background: #222; border-color: #444; color: #ccc; }
+      .col-header { color: #ccc; }
+    }
+
+    .page-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 3rem 1rem 5rem;
+    }
+
+    .game-card {
+      /* Använder färgen 'Kokos' med 95% opacitet för att bakgrunden ska skina igenom snyggt */
+      background: rgba(231, 225, 211, 0.95); 
+      border: 1px solid var(--lavender-touch);
+      border-radius: 20px;
+      padding: 3rem 2.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      backdrop-filter: blur(4px); /* Gör bakgrunden lite suddig bakom kortet */
+    }
+
+    .game-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .game-title {
+      font-family: 'Space Mono', monospace;
+      font-size: 42px;
+      font-weight: 700;
+      color: #1a1a1a;
+      letter-spacing: -1.5px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .game-title { color: #eee; }
+    }
+
+    /* Använder färgen 'Bella' för 'dle' i titeln */
+    .game-title span { color: var(--bella); }
+
+    .game-subtitle {
+      font-size: 16px;
+      color: #555;
+      margin-top: 8px;
+    }
+
+    .line-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .line-pill {
+      font-size: 14px;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 24px;
+      color: #fff;
+      letter-spacing: 0.5px;
+    }
+
+    .hint-legend {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .hint-chip {
+      font-size: 13px;
+      font-weight: 500;
+      color: #444;
+      background: var(--space); /* Använder 'Space' från paletten */
+      border: 1px solid var(--lavender-touch);
+      border-radius: 20px;
+      padding: 6px 14px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    .station-input {
+      flex: 1;
+      height: 60px;
+      padding: 0 20px;
+      border: 2px solid var(--lavender-touch);
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 18px;
+      outline: none;
+      transition: border-color 0.2s;
+      background: #fff;
+    }
+
+    .station-input:focus { border-color: var(--bella); }
+
+    .guess-btn {
+      height: 60px;
+      padding: 0 30px;
+      background: var(--bella); /* Använder 'Bella' som primär färg på knappen */
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .guess-btn:hover { background: #ba765c; } /* Lite mörkare Bella vid hovring */
+    .guess-btn:active { transform: scale(0.98); }
+    .guess-btn:disabled { background: var(--lavender-touch); cursor: not-allowed; transform: none; }
+
+    .autocomplete-list {
+      position: absolute;
+      top: 68px;
+      left: 0;
+      right: 120px;
+      background: #fff;
+      border: 1px solid var(--lavender-touch);
+      border-radius: 12px;
+      z-index: 100;
+      max-height: 300px;
+      overflow-y: auto;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    .autocomplete-item {
+      padding: 14px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #000000; /* SVART TEXT FÖR STATIONERNA */
+      font-weight: 500;
+    }
+
+    .autocomplete-item:hover { background: var(--varluft); } /* Använder 'Vårluft' när man hovrar */
+
+    .autocomplete-dot {
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .feedback-msg {
+      font-size: 15px;
+      font-weight: 600;
+      color: #E65100;
+      text-align: center;
+      height: 24px;
+      margin-bottom: 10px;
+    }
+
+    .attempts-counter {
+      font-size: 16px;
+      font-weight: 500;
+      color: #555;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .col-headers {
+      display: grid;
+      grid-template-columns: 2fr 1.2fr 1fr 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+      padding: 0 4px;
+    }
+
+    .col-header {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #666;
+      text-align: center;
+    }
+
+    .col-header:first-child { text-align: left; padding-left: 10px; }
+
+    .guesses-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .guess-row {
+      display: grid;
+      grid-template-columns: 2fr 1.2fr 1fr 1fr 1fr 1fr;
+      gap: 8px;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .guess-cell {
+      padding: 12px 8px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 56px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      background: #fff; /* Vit bakgrund på fel gissningar så det är lättläst */
+    }
+
+    .guess-cell:first-child {
+      text-align: left;
+      justify-content: flex-start;
+      padding-left: 16px;
+      font-size: 16px;
+    }
+
+    .cell-correct { background: #2E7D32; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+    .cell-wrong   { background: #B71C1C; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+    .cell-partial { background: #E65100; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+
+    .line-dot {
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 10px;
+      flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .win-banner, .lose-banner {
+      text-align: center;
+      padding: 2rem;
+      border-radius: 16px;
+      margin-top: 2rem;
+      animation: slideIn 0.4s ease;
+    }
+
+    .win-banner  { background: #E8F5E9; border: 2px solid #A5D6A7; color: #1B5E20; }
+    .lose-banner { background: #FFEBEE; border: 2px solid #FFCDD2; color: #B71C1C; }
+
+    .banner-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .banner-sub   { font-size: 18px; opacity: 0.9; }
+
+    .footer {
+      text-align: center;
+      font-size: 14px;
+      color: #333; /* Lite mörkare för att synas bra över bilden */
+      margin-top: 3rem;
+      background: rgba(255,255,255,0.6);
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 20px;
+      backdrop-filter: blur(2px);
+    }
+    .footer-container {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+    <div class="game-card">
+
+      <div class="game-header">
+        <div class="game-title">Tunnelbane<span>dle</span></div>
+        <div class="game-subtitle">Gissa dagens Stockholmsstation – 8 försök</div>
+      </div>
+
+      <div class="line-legend" id="lineLegend"></div>
+
+      <div class="hint-legend">
+        <div class="hint-chip">Linje</div>
+        <div class="hint-chip">Avstånd från T-Centralen</div>
+        <div class="hint-chip">Över/Under jord</div>
+        <div class="hint-chip">Antal bokstäver</div>
+        <div class="hint-chip">Öppningsår</div>
+      </div>
+
+      <div class="input-row">
+        <input class="station-input" id="stationInput" type="text" placeholder="Skriv en station..." autocomplete="off" />
+        <button class="guess-btn" id="guessBtn" onclick="makeGuess()">Gissa</button>
+        <div class="autocomplete-list" id="autocomplete" style="display:none"></div>
+      </div>
+
+      <div class="feedback-msg" id="feedbackMsg"></div>
+      <div class="attempts-counter" id="attemptsCounter"></div>
+
+      <div class="col-headers">
+        <div class="col-header">Station</div>
+        <div class="col-header">Linje</div>
+        <div class="col-header">Från T-C</div>
+        <div class="col-header">Läge</div>
+        <div class="col-header">Bokstäver</div>
+        <div class="col-header">Öppnade</div>
+      </div>
+
+      <div class="guesses-list" id="guessesList"></div>
+
+      <div id="endBanner"></div>
+
+    </div>
+
+    <div class="footer-container">
+      <div class="footer">Ny station varje dag &middot; Pilen (↑) betyder att hemliga stationen har ett HÖGRE värde.</div>
+    </div>
+  </div>
+
+  <script>
+    const LINE_COLORS = {
+      'T10':'#1565C0','T11':'#1565C0',
+      'T13':'#E53935','T14':'#E53935',
+      'T17':'#4CAF50','T18':'#4CAF50','T19':'#4CAF50',
+    };
+
+    const STATIONS = [
+      // Blå linjen
+      {name:'Kungsträdgården', lines:['T10','T11'], distTC: 1, underground: true, opened:1977},
+      {name:'T-Centralen', lines:['T10','T11','T13','T14','T17','T18','T19'], distTC: 0, underground: true, opened:1950},
+      {name:'Rådhuset', lines:['T10','T11'], distTC: 1, underground: true, opened:1975},
+      {name:'Fridhemsplan', lines:['T10','T11','T17','T18','T19'], distTC: 2, underground: true, opened:1952},
+      {name:'Stadshagen', lines:['T10','T11'], distTC: 3, underground: true, opened:1975},
+      {name:'Västra skogen', lines:['T10','T11'], distTC: 4, underground: true, opened:1975},
+      {name:'Huvudsta', lines:['T10'], distTC: 5, underground: true, opened:1985},
+      {name:'Solna strand', lines:['T10'], distTC: 6, underground: true, opened:1985},
+      {name:'Sundbybergs centrum', lines:['T10'], distTC: 7, underground: true, opened:1985},
+      {name:'Duvbo', lines:['T10'], distTC: 8, underground: true, opened:1985},
+      {name:'Rissne', lines:['T10'], distTC: 9, underground: true, opened:1985},
+      {name:'Rinkeby', lines:['T10'], distTC: 10, underground: true, opened:1975},
+      {name:'Tensta', lines:['T10'], distTC: 11, underground: true, opened:1975},
+      {name:'Hjulsta', lines:['T10'], distTC: 12, underground: true, opened:1975},
+      {name:'Solna centrum', lines:['T11'], distTC: 5, underground: true, opened:1975},
+      {name:'Näckrosen', lines:['T11'], distTC: 6, underground: true, opened:1975},
+      {name:'Hallonbergen', lines:['T11'], distTC: 7, underground: true, opened:1975},
+      {name:'Kista', lines:['T11'], distTC: 8, underground: false, opened:1977},
+      {name:'Husby', lines:['T11'], distTC: 9, underground: true, opened:1977},
+      {name:'Akalla', lines:['T11'], distTC: 10, underground: true, opened:1977},
+
+      // Röda linjen
+      {name:'Mörby centrum', lines:['T14'], distTC: 7, underground: true, opened:1978},
+      {name:'Danderyds sjukhus', lines:['T14'], distTC: 6, underground: false, opened:1978},
+      {name:'Bergshamra', lines:['T14'], distTC: 5, underground: true, opened:1978},
+      {name:'Universitetet', lines:['T14'], distTC: 4, underground: true, opened:1975},
+      {name:'Tekniska högskolan', lines:['T14'], distTC: 3, underground: true, opened:1973},
+      {name:'Stadion', lines:['T14'], distTC: 2, underground: true, opened:1973},
+      {name:'Ropsten', lines:['T13'], distTC: 4, underground: false, opened:1967},
+      {name:'Gärdet', lines:['T13'], distTC: 3, underground: true, opened:1967},
+      {name:'Karlaplan', lines:['T13'], distTC: 2, underground: true, opened:1967},
+      {name:'Östermalmstorg', lines:['T13','T14'], distTC: 1, underground: true, opened:1965},
+      {name:'Gamla stan', lines:['T13','T14','T17','T18','T19'], distTC: 1, underground: false, opened:1957},
+      {name:'Slussen', lines:['T13','T14','T17','T18','T19'], distTC: 2, underground: true, opened:1950},
+      {name:'Mariatorget', lines:['T13','T14'], distTC: 3, underground: true, opened:1964},
+      {name:'Zinkensdamm', lines:['T13','T14'], distTC: 4, underground: true, opened:1964},
+      {name:'Hornstull', lines:['T13','T14'], distTC: 5, underground: true, opened:1964},
+      {name:'Liljeholmen', lines:['T13','T14'], distTC: 6, underground: true, opened:1964},
+      {name:'Midsommarkransen', lines:['T14'], distTC: 7, underground: true, opened:1964},
+      {name:'Telefonplan', lines:['T14'], distTC: 8, underground: true, opened:1964},
+      {name:'Hägerstensåsen', lines:['T14'], distTC: 9, underground: false, opened:1964},
+      {name:'Västertorp', lines:['T14'], distTC: 10, underground: false, opened:1964},
+      {name:'Fruängen', lines:['T14'], distTC: 11, underground: false, opened:1964},
+      {name:'Aspudden', lines:['T13'], distTC: 7, underground: true, opened:1964},
+      {name:'Örnsberg', lines:['T13'], distTC: 8, underground: true, opened:1964},
+      {name:'Axelsberg', lines:['T13'], distTC: 9, underground: false, opened:1965},
+      {name:'Mälarhöjden', lines:['T13'], distTC: 10, underground: true, opened:1965},
+      {name:'Bredäng', lines:['T13'], distTC: 11, underground: false, opened:1965},
+      {name:'Sätra', lines:['T13'], distTC: 12, underground: true, opened:1965},
+      {name:'Skärholmen', lines:['T13'], distTC: 13, underground: true, opened:1967},
+      {name:'Vårberg', lines:['T13'], distTC: 14, underground: true, opened:1967},
+      {name:'Vårby gård', lines:['T13'], distTC: 15, underground: false, opened:1972},
+      {name:'Masmo', lines:['T13'], distTC: 16, underground: true, opened:1972},
+      {name:'Fittja', lines:['T13'], distTC: 17, underground: false, opened:1972},
+      {name:'Alby', lines:['T13'], distTC: 18, underground: true, opened:1974},
+      {name:'Hallunda', lines:['T13'], distTC: 19, underground: false, opened:1975},
+      {name:'Norsborg', lines:['T13'], distTC: 20, underground: false, opened:1975},
+
+      // Gröna linjen
+      {name:'Hässelby strand', lines:['T19'], distTC: 20, underground: false, opened:1958},
+      {name:'Hässelby gård', lines:['T19'], distTC: 19, underground: false, opened:1958},
+      {name:'Johannelund', lines:['T19'], distTC: 18, underground: false, opened:1956},
+      {name:'Vällingby', lines:['T19'], distTC: 17, underground: false, opened:1954},
+      {name:'Råcksta', lines:['T19'], distTC: 16, underground: false, opened:1954},
+      {name:'Blackeberg', lines:['T19'], distTC: 15, underground: false, opened:1952},
+      {name:'Islandstorget', lines:['T17','T19'], distTC: 14, underground: false, opened:1952},
+      {name:'Ängbyplan', lines:['T17','T19'], distTC: 13, underground: false, opened:1952},
+      {name:'Åkeshov', lines:['T17','T19'], distTC: 12, underground: false, opened:1952},
+      {name:'Brommaplan', lines:['T17','T18','T19'], distTC: 11, underground: false, opened:1952},
+      {name:'Abrahamsberg', lines:['T17','T18','T19'], distTC: 10, underground: false, opened:1952},
+      {name:'Stora mossen', lines:['T17','T18','T19'], distTC: 9, underground: false, opened:1952},
+      {name:'Alvik', lines:['T17','T18','T19'], distTC: 8, underground: false, opened:1952},
+      {name:'Kristineberg', lines:['T17','T18','T19'], distTC: 7, underground: false, opened:1952},
+      {name:'Thorildsplan', lines:['T17','T18','T19'], distTC: 6, underground: false, opened:1952},
+      {name:'S:t Eriksplan', lines:['T17','T18','T19'], distTC: 4, underground: true, opened:1952},
+      {name:'Odenplan', lines:['T17','T18','T19'], distTC: 3, underground: true, opened:1952},
+      {name:'Rådmansgatan', lines:['T17','T18','T19'], distTC: 2, underground: true, opened:1952},
+      {name:'Hötorget', lines:['T17','T18','T19'], distTC: 1, underground: true, opened:1952},
+      {name:'Medborgarplatsen', lines:['T17','T18','T19'], distTC: 3, underground: true, opened:1950},
+      {name:'Skanstull', lines:['T17','T18','T19'], distTC: 4, underground: true, opened:1950},
+      {name:'Gullmarsplan', lines:['T17','T18','T19'], distTC: 5, underground: false, opened:1950},
+      {name:'Skärmarbrink', lines:['T17','T18'], distTC: 6, underground: false, opened:1950},
+      {name:'Hammarbyhöjden', lines:['T17'], distTC: 7, underground: false, opened:1958},
+      {name:'Björkhagen', lines:['T17'], distTC: 8, underground: false, opened:1958},
+      {name:'Kärrtorp', lines:['T17'], distTC: 9, underground: false, opened:1958},
+      {name:'Bagarmossen', lines:['T17'], distTC: 10, underground: true, opened:1994},
+      {name:'Skarpnäck', lines:['T17'], distTC: 11, underground: true, opened:1994},
+      {name:'Blåsut', lines:['T18'], distTC: 7, underground: false, opened:1950},
+      {name:'Sandsborg', lines:['T18'], distTC: 8, underground: false, opened:1950},
+      {name:'Skogskyrkogården', lines:['T18'], distTC: 9, underground: false, opened:1950},
+      {name:'Tallkrogen', lines:['T18'], distTC: 10, underground: false, opened:1950},
+      {name:'Gubbängen', lines:['T18'], distTC: 11, underground: false, opened:1950},
+      {name:'Hökarängen', lines:['T18'], distTC: 12, underground: false, opened:1950},
+      {name:'Farsta', lines:['T18'], distTC: 13, underground: false, opened:1960},
+      {name:'Farsta strand', lines:['T18'], distTC: 14, underground: false, opened:1971},
+      {name:'Globen', lines:['T19'], distTC: 6, underground: false, opened:1951},
+      {name:'Enskede gård', lines:['T19'], distTC: 7, underground: false, opened:1951},
+      {name:'Sockenplan', lines:['T19'], distTC: 8, underground: false, opened:1951},
+      {name:'Svedmyra', lines:['T19'], distTC: 9, underground: false, opened:1951},
+      {name:'Stureby', lines:['T19'], distTC: 10, underground: false, opened:1951},
+      {name:'Bandhagen', lines:['T19'], distTC: 11, underground: false, opened:1954},
+      {name:'Högdalen', lines:['T19'], distTC: 12, underground: false, opened:1954},
+      {name:'Rågsved', lines:['T19'], distTC: 13, underground: false, opened:1959},
+      {name:'Hagsätra', lines:['T19'], distTC: 14, underground: false, opened:1960}
+    ];
+
+    function countLetters(name) {
+      return name.replace(/[^a-zåäöA-ZÅÄÖ]/g, '').length;
+    }
+
+    function getDailyStation() {
+      const now = new Date();
+      const seed = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
+      return STATIONS[seed % STATIONS.length];
+    }
+
+    const TARGET = getDailyStation();
+    let guesses = [];
+    let gameOver = false;
+    const MAX_GUESSES = 8; // ÄNDRAT TILL 8 FÖRSÖK
+
+    function init() {
+      const legend = document.getElementById('lineLegend');
+      [['T10/T11 – Blå linjen','#1565C0'],['T13/T14 – Röda linjen','#E53935'],['T17/T18/T19 – Gröna linjen','#4CAF50']].forEach(([label,color]) => {
+        const p = document.createElement('div');
+        p.className = 'line-pill';
+        p.style.background = color;
+        p.textContent = label;
+        legend.appendChild(p);
+      });
+
+      updateCounter();
+
+      const input = document.getElementById('stationInput');
+      input.addEventListener('input', onInput);
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') makeGuess();
+        if (e.key === 'Escape') hideAuto();
+      });
+      document.addEventListener('click', e => {
+        if (!e.target.closest('.input-row')) hideAuto();
+      });
+    }
+
+    function onInput() {
+      const val = document.getElementById('stationInput').value.trim().toLowerCase();
+      document.getElementById('feedbackMsg').textContent = '';
+      if (!val) { hideAuto(); return; }
+      const matches = STATIONS.filter(s => s.name.toLowerCase().includes(val)).slice(0, 8);
+      showAuto(matches);
+    }
+
+    function showAuto(matches) {
+      const list = document.getElementById('autocomplete');
+      if (!matches.length) { list.style.display = 'none'; return; }
+      list.innerHTML = '';
+      matches.forEach(s => {
+        const item = document.createElement('div');
+        item.className = 'autocomplete-item';
+        const color = LINE_COLORS[s.lines[0]] || '#888';
+        item.innerHTML = `<span class="autocomplete-dot" style="background:${color}"></span>${s.name}`;
+        item.onclick = () => {
+          document.getElementById('stationInput').value = s.name;
+          hideAuto();
+        };
+        list.appendChild(item);
+      });
+      list.style.display = 'block';
+    }
+
+    function hideAuto() {
+      document.getElementById('autocomplete').style.display = 'none';
+    }
+
+    function makeGuess() {
+      if (gameOver) return;
+      const val = document.getElementById('stationInput').value.trim();
+      const station = STATIONS.find(s => s.name.toLowerCase() === val.toLowerCase());
+      const msg = document.getElementById('feedbackMsg');
+
+      if (!station) { msg.textContent = 'Station hittades inte – välj ur listan.'; return; }
+      if (guesses.find(g => g.name === station.name)) {
+        msg.textContent = `Du har redan gissat ${station.name}!`; return;
+      }
+
+      guesses.push(station);
+      renderGuess(station);
+      document.getElementById('stationInput').value = '';
+      hideAuto();
+      updateCounter();
+
+      if (station.name === TARGET.name) {
+        gameOver = true;
+        showBanner(true);
+        document.getElementById('guessBtn').disabled = true;
+        document.getElementById('stationInput').disabled = true;
+      } else if (guesses.length >= MAX_GUESSES) {
+        gameOver = true;
+        showBanner(false);
+        document.getElementById('guessBtn').disabled = true;
+        document.getElementById('stationInput').disabled = true;
+      }
+    }
+
+    function renderGuess(station) {
+      const row = document.createElement('div');
+      row.className = 'guess-row';
+
+      const tLines = TARGET.lines.slice().sort().join(',');
+      const gLines = station.lines.slice().sort().join(',');
+      const lineMatch   = tLines === gLines;
+      const linePartial = !lineMatch && station.lines.some(l => TARGET.lines.includes(l));
+
+      const distDiff = station.distTC - TARGET.distTC;
+      const distArrow = distDiff === 0 ? '' : (distDiff < 0 ? ' ↑' : ' ↓');
+      const distMatch = distDiff === 0;
+
+      const underMatch = station.underground === TARGET.underground;
+      const underText = station.underground ? 'Under' : 'Över';
+
+      const lettersGuess = countLetters(station.name);
+      const lettersTarget = countLetters(TARGET.name);
+      const lettersDiff = lettersGuess - lettersTarget;
+      const lettersArrow = lettersDiff === 0 ? '' : (lettersDiff < 0 ? ' ↑' : ' ↓');
+      const lettersMatch = lettersDiff === 0;
+
+      const openedDiff  = station.opened - TARGET.opened;
+      const openedMatch = openedDiff === 0;
+      const openedArrow = openedMatch ? '' : (openedDiff < 0 ? ' ↑' : ' ↓');
+
+      const dot = `<span class="line-dot" style="background:${LINE_COLORS[station.lines[0]] || '#888'}"></span>`;
+
+      row.innerHTML = `
+        <div class="guess-cell ${station.name === TARGET.name ? 'cell-correct' : 'cell-wrong'}">${dot}${station.name}</div>
+        <div class="guess-cell ${lineMatch ? 'cell-correct' : linePartial ? 'cell-partial' : 'cell-wrong'}">${station.lines.join(', ')}</div>
+        <div class="guess-cell ${distMatch ? 'cell-correct' : 'cell-wrong'}">${station.distTC}${distArrow}</div>
+        <div class="guess-cell ${underMatch ? 'cell-correct' : 'cell-wrong'}">${underText}</div>
+        <div class="guess-cell ${lettersMatch ? 'cell-correct' : 'cell-wrong'}">${lettersGuess}${lettersArrow}</div>
+        <div class="guess-cell ${openedMatch ? 'cell-correct' : 'cell-wrong'}">${station.opened}${openedArrow}</div>
+      `;
+
+      document.getElementById('guessesList').prepend(row);
+    }
+
+    function updateCounter() {
+      document.getElementById('attemptsCounter').textContent = `Försök: ${guesses.length} / ${MAX_GUESSES}`;
+    }
+
+    function showBanner(won) {
+      const el = document.getElementById('endBanner');
+      if (won) {
+        el.innerHTML = `<div class="win-banner"><div class="banner-title">Rätt! 🎉</div><div class="banner-sub">Du hittade <strong>${TARGET.name}</strong> på ${guesses.length} försök!</div></div>`;
+      } else {
+        el.innerHTML = `<div class="lose-banner"><div class="banner-title">Game over</div><div class="banner-sub">Dagens station var <strong>${TARGET.name}</strong>. Försök igen imorgon!</div></div>`;
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
