@@ -318,6 +318,7 @@
       border-radius: 20px;
       backdrop-filter: blur(2px);
       line-height: 1.5;
+      font-weight: bold;
     }
     .footer-container {
       text-align: center;
@@ -336,11 +337,11 @@
       <div class="line-legend" id="lineLegend"></div>
 
       <div class="hint-legend">
-        <div class="hint-chip">Linje</div>
-        <div class="hint-chip">Avstånd från T-Centralen</div>
-        <div class="hint-chip">Över/Under jord</div>
-        <div class="hint-chip">Antal bokstäver</div>
-        <div class="hint-chip">Öppningsår</div>
+        <div class="hint-chip">LINJE</div>
+        <div class="hint-chip">STATIONER FRÅN T-CENTRALEN</div>
+        <div class="hint-chip">ÖVER/UNDER JORD</div>
+        <div class="hint-chip">ANTAL BOKSTÄVER</div>
+        <div class="hint-chip">ÖPPNINGSÅR</div>
       </div>
 
       <div class="input-row">
@@ -369,7 +370,7 @@
 
     <div class="footer-container">
       <div class="footer">!NY STATION VARJE DAG!
-        <br>&middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot; &middot;
+        <br>&middot; &middot; &middot; 
         <br>PILEN (↑) BETYDER ATT STATIONEN HAR ETT HÖGRE VÄRDE</div>
     </div>
   </div>
@@ -506,7 +507,7 @@
 
     function init() {
       const legend = document.getElementById('lineLegend');
-      [['T10/T11 – Blå linjen','#1565C0'],['T13/T14 – Röda linjen','#E53935'],['T17/T18/T19 – Gröna linjen','#4CAF50']].forEach(([label,color]) => {
+      [['T10/T11 – BLÅA LINJEN','#1565C0'],['T13/T14 – RÖDA LINJEN','#E53935'],['T17/T18/T19 – GRÖNA LINJEN','#4CAF50']].forEach(([label,color]) => {
         const p = document.createElement('div');
         p.className = 'line-pill';
         p.style.background = color;
