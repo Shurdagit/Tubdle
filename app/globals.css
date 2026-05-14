@@ -1,633 +1,76 @@
-    @import url('https://fonts.googleapis.com/css2?...');
-    
-    :root {
-      --dusk-green: #b4bca4;
-      --varluft: #d6d1aa;
-      --kokos: #e7e1d3;
-      --cheerful-peach: #f4ceab;
-      --bella: #d48c70;
-      --lavender-touch: #b9b3b4;
-      --space: #dad5ca;
-    }
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;600;700&display=swap');
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --dusk-green: #b4bca4;
+  --bella: #d48c70;
+  --lavender-touch: #b9b3b4;
+}
 
-    body {
+body {
   font-family: 'DM Sans', sans-serif;
   background: url('/gratisTB.jpg') no-repeat center center fixed;
   background-size: cover;
-  color: #1a1a1a;
   margin: 0;
   padding: 0;
   min-height: 100vh;
+  display: flex;
+  justify-content: center;
 }
 
-    @media (max-width: 600px) {
-      body {
-        background: #c8e6c9 !important;
-        background-image: none !important;
-      }
-    }
-
-    @media (prefers-color-scheme: dark) {
-      body { color: #eee; }
-      .game-card { background: rgba(40, 40, 40, 0.95); border-color: var(--lavender-touch); }
-      .station-input { background: rgba(30, 30, 30, 0.9); color: #eee; border-color: #444; }
-      .guess-btn { background: var(--bella); }
-      .autocomplete-list { background: rgba(30, 30, 30, 0.95); border-color: #444; }
-      .autocomplete-item { color: #000000; }
-      .autocomplete-item:hover { background: var(--dusk-green); }
-      .hint-chip { background: #222; border-color: #444; color: #ccc; }
-      .col-header { color: #ccc; }
-    }
-
-    .page-wrap {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 3rem 1rem 5rem;
-    }
-
-    @media (max-width: 600px) {
-      .page-wrap { padding: 1.2rem 0.6rem 4rem; }
-    }
-
-    .game-container {
-      background: rgba(231, 225, 211, 0.95);
-      border: 1px solid var(--lavender-touch);
-      border-radius: 20px;
-      padding: 2.5rem 2.5rem 2rem;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-      backdrop-filter: blur(4px);
-    }
-
-    @media (max-width: 600px) {
-      .game-card { padding: 1.4rem 1rem; border-radius: 14px; }
-    }
-
-    /* ── HEADER ── */
-    .game-header {
-      text-align: center;
-      margin-bottom: 1.6rem;
-    }
-
-    .game-title {
-      font-family: 'Space Mono', monospace;
-      font-size: 56px;
-      font-weight: 700;
-      color: #b4bca4;
-      letter-spacing: -2px;
-      line-height: 1;
-      text-shadow:
-        -1px -1px 0 #000,
-         1px -1px 0 #000,
-        -1px  1px 0 #000,
-         1px  1px 0 #000;
-    }
-
-    @media (max-width: 600px) {
-      .game-title { font-size: 38px; }
-    }
-
-    @media (prefers-color-scheme: dark) {
-      .game-title { color: #b4bca4 !important; }
-    }
-
-    .game-title span {
-      color: var(--bella);
-      text-shadow:
-        -1px -1px 0 #000,
-         1px -1px 0 #000,
-        -1px  1px 0 #000,
-         1px  1px 0 #000;
-    }
-
-    .game-tagline-wrap {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 14px;
-    }
-
-    .tagline-line {
-      flex: 1;
-      max-width: 60px;
-      height: 2px;
-      background: linear-gradient(to right, transparent, var(--bella));
-      border-radius: 2px;
-    }
-
-    .tagline-line.right {
-      background: linear-gradient(to left, transparent, var(--bella));
-    }
-
-    .game-tagline {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 12px;
-      font-weight: 700;
-      color: #333;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      background: rgba(212, 140, 112, 0.12);
-      border: 1px solid rgba(212, 140, 112, 0.4);
-      border-radius: 30px;
-      padding: 5px 16px;
-      white-space: nowrap;
-    }
-
-    @media (max-width: 600px) {
-      .game-tagline { font-size: 9px; letter-spacing: 0.8px; padding: 4px 11px; }
-      .tagline-line { max-width: 30px; }
-    }
-
-    /* ── LINJE-PILLS ── */
-    .line-legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-      margin-bottom: 1.2rem;
-    }
-
-    .line-pill-wrap {
-      position: relative;
-      display: inline-block;
-    }
-
-    .line-pill {
-      font-family: 'Space Mono', monospace;
-      font-size: 14px;
-      font-weight: 700;
-      padding: 7px 18px;
-      border-radius: 24px;
-      color: #fff;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      user-select: none;
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
-
-    .line-pill:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.25);
-    }
-
-    @media (max-width: 600px) {
-      .line-pill { font-size: 12px; padding: 5px 12px; }
-    }
-
-    /* ── LINJE-TOOLTIP ── */
-    .line-tooltip {
-      display: none;
-      position: absolute;
-      top: calc(100% + 10px);
-      left: 50%;
-      transform: translateX(-50%);
-      background: #fff;
-      border: 2px solid currentColor;
-      border-radius: 14px;
-      padding: 12px 18px;
-      box-shadow: 0 8px 28px rgba(0,0,0,0.18);
-      z-index: 500;
-      min-width: 200px;
-      pointer-events: none;
-    }
-
-    .line-pill-wrap:hover .line-tooltip,
-    .line-pill-wrap.tooltip-open .line-tooltip {
-      display: block;
-      animation: tooltipIn 0.18s ease;
-    }
-
-    @keyframes tooltipIn {
-      from { opacity: 0; transform: translateX(-50%) translateY(4px); }
-      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
-    }
-
-    .line-tooltip::before {
-      content: '';
-      position: absolute;
-      top: -8px;
-      left: 50%;
-      transform: translateX(-50%);
-      border-left: 8px solid transparent;
-      border-right: 8px solid transparent;
-      border-bottom: 8px solid currentColor;
-    }
-
-    .line-tooltip::after {
-      content: '';
-      position: absolute;
-      top: -5px;
-      left: 50%;
-      transform: translateX(-50%);
-      border-left: 7px solid transparent;
-      border-right: 7px solid transparent;
-      border-bottom: 7px solid #fff;
-    }
-
-    .tooltip-title {
-      font-family: 'Space Mono', monospace;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-      opacity: 0.7;
-    }
-
-    .tooltip-line-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-
-    .tooltip-line-row:last-child { margin-bottom: 0; }
-
-    .tooltip-line-label {
-      font-family: 'Space Mono', monospace;
-      font-size: 11px;
-      font-weight: 700;
-      color: #fff;
-      border-radius: 10px;
-      padding: 2px 8px;
-      white-space: nowrap;
-    }
-
-    .tooltip-stations {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      color: #1a1a1a;
-      white-space: nowrap;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      .line-tooltip { background: #2a2a2a; }
-      .line-tooltip::after { border-bottom-color: #2a2a2a; }
-      .tooltip-stations { color: #eee; }
-    }
-
-    /* ── INSTRUKTIONSPANEL ── */
-    .instructions-panel {
-      background: rgba(180,188,164,0.30);
-      border: 1.5px solid var(--dusk-green);
-      border-radius: 14px;
-      padding: 14px 20px;
-      margin-bottom: 1.4rem;
-    }
-
-    .instructions-row {
-      font-size: 14px;
-      font-weight: 700;
-      color: #1a1a1a;
-      text-align: center;
-      line-height: 1.6;
-    }
-
-    .instructions-row + .instructions-row {
-      margin-top: 6px;
-      padding-top: 6px;
-      border-top: 1px solid var(--lavender-touch);
-    }
-
-    @media (max-width: 600px) {
-      .instructions-row { font-size: 11px; }
-      .instructions-panel { padding: 10px 12px; }
-    }
-
-    .hint-chips-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
-      margin-top: 10px;
-    }
-
-    .hint-chip {
-      font-size: 12px;
-      font-weight: 700;
-      color: #1a1a1a;
-      background: var(--kokos);
-      border: 1px solid #999;
-      border-radius: 20px;
-      padding: 5px 12px;
-      letter-spacing: 0.3px;
-    }
-
-    @media (max-width: 600px) {
-      .hint-chip { font-size: 10px; padding: 4px 9px; }
-    }
-
-    /* ── INPUT ── */
-    .input-row {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 1rem;
-      position: relative;
-    }
-
-    .station-input {
-      flex: 1;
-      height: 60px;
-      padding: 0 20px;
-      border: 2px solid var(--lavender-touch);
-      border-radius: 12px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 18px;
-      outline: none;
-      transition: border-color 0.2s;
-      background: #fff;
-      color: #000000;
-    }
-
-    @media (max-width: 600px) {
-      .station-input { height: 50px; font-size: 15px; padding: 0 14px; }
-    }
-
-    .station-input:focus { border-color: var(--bella); }
-
-    .guess-btn {
-      height: 60px;
-      padding: 0 30px;
-      background: #16a34a;
-      color: #ffffff;
-      border: none;
-      border-radius: 12px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 18px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-      white-space: nowrap;
-    }
-
-    @media (max-width: 600px) {
-      .guess-btn { height: 50px; padding: 0 18px; font-size: 15px; }
-    }
-
-    .guess-btn:hover { background: #15803d; }
-    .guess-btn:active { transform: scale(0.98); }
-    .guess-btn:disabled { background: var(--lavender-touch); cursor: not-allowed; transform: none; }
-
-    .autocomplete-list {
-      position: absolute;
-      top: 68px;
-      left: 0;
-      right: 120px;
-      background: #fff;
-      border: 1px solid var(--lavender-touch);
-      border-radius: 12px;
-      z-index: 100;
-      max-height: 300px;
-      overflow-y: auto;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    }
-
-    @media (max-width: 600px) {
-      .autocomplete-list { top: 58px; right: 90px; }
-    }
-
-    .autocomplete-item {
-      padding: 14px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: #000000;
-      font-weight: 500;
-    }
-
-    .autocomplete-item:hover { background: var(--varluft); }
-
-    .autocomplete-dot {
-      width: 14px; height: 14px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    /* ── MELLANSEKTIONEN ── */
-    .mid-section {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .color-legend {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .color-box {
-      font-size: 13px;
-      font-weight: 700;
-      padding: 5px 16px;
-      border-radius: 20px;
-      letter-spacing: 0.5px;
-    }
-
-    .color-correct { background: #2E7D32; color: #fff; }
-    .color-partial { background: #F5C400; color: #1a1a1a; }
-    .color-wrong   { background: #B71C1C; color: #fff; }
-
-    .feedback-msg {
-      font-size: 15px;
-      font-weight: 600;
-      color: #E65100;
-      text-align: center;
-      min-height: 22px;
-    }
-
-    .attempts-counter {
-      font-size: 16px;
-      font-weight: bold;
-      color: #ff0000;
-      text-align: center;
-    }
-
-    .divider {
-      border: none;
-      border-top: 1px solid var(--lavender-touch);
-      margin: 0.3rem 0;
-    }
-
-    .col-headers {
-      display: grid;
-      grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
-      gap: 8px;
-      padding: 0 4px;
-    }
-
-    @media (max-width: 600px) {
-      .col-headers {
-        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 0.8fr) minmax(0, 0.8fr) minmax(0, 0.9fr);
-        gap: 4px;
-      }
-    }
-
-    .col-header {
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #666;
-      text-align: center;
-    }
-
-    @media (max-width: 600px) {
-      .col-header { font-size: 9px; letter-spacing: 0.3px; }
-    }
-
-    .col-header:first-child { text-align: left; padding-left: 10px; }
-
-    /* ── GISSNINGAR ── */
-    .guesses-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 0.5rem;
-    }
-
-    .guess-row {
-      display: grid;
-      grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
-      gap: 8px;
-      animation: slideIn 0.3s ease;
-    }
-
-    @media (max-width: 600px) {
-      .guess-row {
-        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 0.8fr) minmax(0, 0.8fr) minmax(0, 0.9fr);
-        gap: 4px;
-      }
-    }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .guess-cell {
-      padding: 12px 8px;
-      border-radius: 8px;
-      text-align: center;
-      font-size: 15px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 56px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      background: #fff;
-    }
-
-    @media (max-width: 600px) {
-      .guess-cell { font-size: 11px; padding: 8px 4px; min-height: 44px; border-radius: 6px; }
-      .guess-cell:first-child { font-size: 12px; padding-left: 8px; }
-    }
-
-    .guess-cell:first-child {
-      text-align: left;
-      justify-content: flex-start;
-      padding-left: 16px;
-      font-size: 16px;
-      word-break: break-word;
-      overflow-wrap: anywhere;
-    }
-
-    .cell-correct { background: #2E7D32; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-    .cell-wrong   { background: #B71C1C; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-    .cell-partial { background: #F5C400; color: #1a1a1a; text-shadow: none; }
-
-    .line-dot {
-      width: 14px; height: 14px;
-      border-radius: 50%;
-      display: inline-block;
-      margin-right: 10px;
-      flex-shrink: 0;
-      border: 1px solid rgba(255,255,255,0.3);
-    }
-
-    @media (max-width: 600px) {
-      .line-dot { width: 10px; height: 10px; margin-right: 5px; }
-    }
-
-    /* ── BANNERS ── */
-    .win-banner, .lose-banner {
-      text-align: center;
-      padding: 2rem;
-      border-radius: 16px;
-      margin-top: 2rem;
-      animation: slideIn 0.4s ease;
-    }
-
-    .win-banner  { background: #E8F5E9; border: 2px solid #A5D6A7; color: #1B5E20; }
-    .lose-banner { background: #FFEBEE; border: 2px solid #FFCDD2; color: #B71C1C; }
-
-    .banner-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
-    .banner-sub   { font-size: 18px; opacity: 0.9; }
-
-    @media (max-width: 600px) {
-      .banner-title { font-size: 22px; }
-      .banner-sub   { font-size: 15px; }
-    }
-
-    /* ── FOOTER ── */
-    .footer-container { text-align: center; margin-top: 1.8rem; }
-
-    .footer {
-      display: inline-block;
-      text-align: center;
-      font-size: 14px;
-      font-weight: bold;
-      color: #333;
-      background: rgba(255,255,255,0.6);
-      padding: 10px 20px;
-      border-radius: 20px;
-      backdrop-filter: blur(2px);
-      line-height: 1.7;
-    }
-
-    .timer-box {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 8px;
-      font-family: 'Space Mono', monospace;
-      font-size: 14px;
-      color: #3a3a3a;
-      font-weight: 700;
-      letter-spacing: 1px;
-    }
-
-    .timer-label {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 12px;
-      font-weight: bold;
-      color: #000000;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-    }
-
-    .timer-value { color: #FF0000; }
-
-    /* ── EST. BY SHURDA ── */
-    .est-text {
-      position: fixed;
-      bottom: 5px;
-      left: 0;
-      width: 100%;
-      text-align: center;
-      color: #ffffff !important;
-      font-weight: bold !important;
-      font-size: 12px;
-      background: none !important;
-      border: none !important;
-      z-index: 10001;
-      pointer-events: none;
-    }
+.main-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 2rem;
+}
+
+/* Denna hette .game-card i PDF:en, jag ändrade till .game-container så den matchar page.js */
+.game-container {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
+  backdrop-filter: blur(5px);
+}
+
+.title {
+  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+}
+
+.guess-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.guess-button {
+  background: var(--bella);
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.guess-cell {
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cell-correct { background: #4CAF50; color: white; }
+.cell-wrong { background: #ddd; }
+.cell-partial { background: #FFC107; }
