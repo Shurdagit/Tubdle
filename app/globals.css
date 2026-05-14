@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;600;700&display=swap');
 
 :root {
-  --dusk-green: #b4bca4;
   --bella: #d48c70;
   --lavender-touch: #b9b3b4;
 }
@@ -13,64 +12,69 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  display: flex;
-  justify-content: center;
 }
 
 .main-wrapper {
-  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 2rem;
+  padding-top: 50px;
 }
 
-/* Denna hette .game-card i PDF:en, jag ändrade till .game-container så den matchar page.js */
-.game-container {
-  background: rgba(255, 255, 255, 0.9);
-  padding: 2rem;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+/* Här är klassen från din PDF */
+.game-card {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2.5rem;
+  border-radius: 24px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
   width: 90%;
-  max-width: 500px;
+  max-width: 450px;
   text-align: center;
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(10px);
 }
 
 .title {
   font-family: 'Space Mono', monospace;
+  font-size: 3.5rem;
   font-weight: 700;
-  font-size: 3rem;
   margin-bottom: 1.5rem;
+  letter-spacing: -2px;
 }
 
-.guess-input {
+.station-input {
   width: 100%;
-  padding: 12px;
-  border: 2px solid #ddd;
-  border-radius: 10px;
-  margin-bottom: 10px;
+  padding: 15px;
+  border: 2px solid #eee;
+  border-radius: 12px;
+  font-size: 16px;
+  margin-bottom: 15px;
 }
 
-.guess-button {
+.guess-btn {
   background: var(--bella);
   color: white;
   border: none;
-  padding: 12px 25px;
-  border-radius: 10px;
-  font-weight: bold;
+  padding: 14px 30px;
+  border-radius: 12px;
+  font-weight: 700;
   cursor: pointer;
+  width: 100%;
+}
+
+.guess-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
 }
 
 .guess-cell {
-  padding: 10px;
-  margin: 5px 0;
+  background: #f0f0f0;
+  padding: 12px 5px;
   border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
 }
 
-.cell-correct { background: #4CAF50; color: white; }
-.cell-wrong { background: #ddd; }
-.cell-partial { background: #FFC107; }
+.cell-correct { background: #4CAF50 !important; color: white; }
+.cell-wrong { background: #e0e0e0; }
