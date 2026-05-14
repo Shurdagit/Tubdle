@@ -1,7 +1,7 @@
 import { sql } from '@vercel/postgres';
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 
-export async function POST(request) {
+export async function POST(request: NextRequest) {
   try {
     // Läs av datan som skickades från spelet
     const body = await request.json();
@@ -14,7 +14,7 @@ export async function POST(request) {
     `;
 
     return NextResponse.json({ success: true }, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Databasfel:", error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
