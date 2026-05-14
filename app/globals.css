@@ -27,13 +27,13 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'DM Sans', sans-serif;
-      background: url('/gratisTB.jpg') no-repeat center center fixed;
-      background-size: cover;
-      color: #1a1a1a;
-      min-height: 100vh;
-      padding-bottom: 56px;
-    }
+  font-family: 'DM Sans', sans-serif;
+  /* Det här snedstrecket är superviktigt för att hitta bilden i public-mappen */
+  background: url('/gratisTB.jpg') no-repeat center center fixed;
+  background-size: cover;
+  color: #1a1a1a;
+  min-height: 100vh;
+           }
 
     @media (max-width: 600px) {
       body {
