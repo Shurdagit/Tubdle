@@ -1,3 +1,5 @@
+    @import url('https://fonts.googleapis.com/css2?...');
+    
     :root {
       --dusk-green: #b4bca4;
       --varluft: #d6d1aa;
@@ -49,7 +51,7 @@
       .page-wrap { padding: 1.2rem 0.6rem 4rem; }
     }
 
-    .game-card {
+    .game-container {
       background: rgba(231, 225, 211, 0.95);
       border: 1px solid var(--lavender-touch);
       border-radius: 20px;
