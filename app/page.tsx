@@ -278,6 +278,39 @@ export default function TubdlePage() {
     setOpenTooltipIdx((prev) => (prev === idx ? null : idx));
   }
 
+  useEffect(() => {
+    function updateEstPos() {
+      const est = document.querySelector('.est-text') as HTMLElement;
+      const footerBox = document.querySelector('.footer-container') as HTMLElement;
+      
+      if (!est || !footerBox) return;
+      
+      const footerRect = footerBox.getBoundingClientRect();
+      const gap = 5; // Avstånd i pixlar mellan rutan och texten
+      const windowHeight = window.innerHeight;
+      const estHeight = est.offsetHeight || 20;
+      
+      if (footerRect.bottom + gap + estHeight >= windowHeight) {
+        est.style.position = 'absolute';
+        est.style.bottom = 'auto';
+        est.style.top = (window.scrollY + footerRect.bottom + gap) + 'px';
+      } else {
+        est.style.position = 'fixed';
+        est.style.top = 'auto';
+        est.style.bottom = '5px';
+      }
+    }
+
+    window.addEventListener('scroll', updateEstPos);
+    window.addEventListener('resize', updateEstPos);
+    
+    setTimeout(updateEstPos, 100);
+
+    return () => {
+      window.removeEventListener('scroll', updateEstPos);
+      window.removeEventListener('resize', updateEstPos);
+    };
+  }, []);
   // ── RENDER ────────────────────────────────────────────────────────────────
   return (
     <div className="page-wrap">
