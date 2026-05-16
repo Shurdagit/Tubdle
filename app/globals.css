@@ -632,3 +632,22 @@ body {
   z-index: 10001;
   pointer-events: none;
 }
+/* ========================================= */
+/* ANIMATION FÖR ATT VÄNDA FRAM GISSNINGARNA */
+/* ========================================= */
+
+@keyframes flipIn {
+  0% {
+    transform: rotateX(-90deg);
+    opacity: 0;
+  }
+  100% {
+    transform: rotateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-flip {
+  /* "both" gör att cellen är osynlig (opacity 0) innan det är dess tur att vändas */
+  animation: flipIn 0.6s ease-out both;
+}

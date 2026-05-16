@@ -441,43 +441,65 @@ export default function TubdlePage() {
 
         {/* GISSNINGAR */}
         <div className="guesses-list">
-          {guessRows.map((row, i) => (
-            <div key={`${row.station.name}-${i}`} className="guess-row">
-              {/* Stationsnamn */}
-              <div className={`guess-cell ${row.isTarget ? 'cell-correct' : 'cell-wrong'}`}>
-                <span style={{ display: 'inline-flex', gap: 4, marginRight: 10 }}>
-                  {row.uniqueColors.map((c, ci) => (
-                    <span
-                      key={ci}
-                      className="line-dot"
-                      style={{ background: c, marginRight: 0 }}
-                    />
-                  ))}
-                </span>
-                {row.station.name}
-              </div>
-              {/* Linje */}
-              <div
-                className={`guess-cell ${
-                  row.lineMatch ? 'cell-correct' : row.linePartial ? 'cell-partial' : 'cell-wrong'
-                }`}
-              >
-                {row.station.lines.join(', ')}
-              </div>
-              {/* Avstånd */}
-              <div className={`guess-cell ${row.distMatch ? 'cell-correct' : 'cell-wrong'}`}>
-                {row.distDisplay}
-              </div>
-              {/* Under/Över jord */}
-              <div className={`guess-cell ${row.underMatch ? 'cell-correct' : 'cell-wrong'}`}>
-                {row.underText}
-              </div>
-              {/* Bokstäver */}
-              <div className={`guess-cell ${row.lettersMatch ? 'cell-correct' : 'cell-wrong'}`}>
-                {row.lettersGuess}{row.lettersArrow}
-              </div>
-            </div>
-          ))}
+         {guessRows.map((row, index) => {
+              // Kolla om detta är den allra senaste gissningen (index 0 eftersom nya hamnar överst)
+              const isNew = index === 0;
+
+              return (
+                <div key={`${row.station.name}-${index}`} className="guess-row">
+                  
+                  {/* 1. Stationsnamn - Ingen fördröjning */}
+                  <div 
+                    className={`guess-cell ${row.isTarget ? 'cell-correct' : 'cell-wrong'} ${isNew ? 'animate-flip' : ''}`}
+                    style={{ animationDelay: isNew ? '0s' : '0s' }}
+                  >
+                    <span style={{ display: 'inline-flex', gap: 4, marginRight: 10 }}>
+                      {row.uniqueColors.map((c, ci) => (
+                        <span
+                          key={ci}
+                          className="line-dot"
+                          style={{ background: c, marginRight: 0 }}
+                        />
+                      ))}
+                    </span>
+                    {row.station.name}
+                  </div>
+
+                  {/* 2. Linje - Väntar i 0.4s */}
+                  <div
+                    className={`guess-cell ${row.lineMatch ? 'cell-correct' : row.linePartial ? 'cell-partial' : 'cell-wrong'} ${isNew ? 'animate-flip' : ''}`}
+                    style={{ animationDelay: isNew ? '0.4s' : '0s' }}
+                  >
+                    {row.station.lines.join(', ')}
+                  </div>
+
+                  {/* 3. Avstånd - Väntar i 0.8s */}
+                  <div 
+                    className={`guess-cell ${row.distMatch ? 'cell-correct' : 'cell-wrong'} ${isNew ? 'animate-flip' : ''}`}
+                    style={{ animationDelay: isNew ? '0.8s' : '0s' }}
+                  >
+                    {row.distDisplay}
+                  </div>
+
+                  {/* 4. Under/Över jord - Väntar i 1.2s */}
+                  <div 
+                    className={`guess-cell ${row.underMatch ? 'cell-correct' : 'cell-wrong'} ${isNew ? 'animate-flip' : ''}`}
+                    style={{ animationDelay: isNew ? '1.2s' : '0s' }}
+                  >
+                    {row.underText}
+                  </div>
+
+                  {/* 5. Bokstäver - Väntar i 1.6s */}
+                  <div 
+                    className={`guess-cell ${row.lettersMatch ? 'cell-correct' : 'cell-wrong'} ${isNew ? 'animate-flip' : ''}`}
+                    style={{ animationDelay: isNew ? '1.6s' : '0s' }}
+                  >
+                    {row.lettersGuess} {row.lettersArrow}
+                  </div>
+
+                </div>
+              );
+            })}
         </div>
 
         {/* SLUTBANNER */}
