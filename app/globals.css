@@ -651,3 +651,24 @@ body {
 .animate-flip {
   animation: flipIn 0.6s ease-out both;
 }
+
+/* ========================================= */
+/* FÖRDRÖJNING AV VINST/FÖRLUST-BANNER       */
+/* ========================================= */
+
+@keyframes popInDelayed {
+  0% {
+    opacity: 0;
+    transform: translateY(20px); /* Börjar lite längre ner */
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.win-banner, .lose-banner {
+  /* 0.5s är hur snabbt den dyker upp, 2.3s är väntetiden */
+  /* "both" är jätteviktig! Den tvingar rutan att vara osynlig (opacity 0) under väntetiden */
+  animation: popInDelayed 0.5s ease-out 2.3s both !important;
+}
