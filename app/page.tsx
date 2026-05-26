@@ -20,9 +20,9 @@ function AutocompletePortal({
   inputRef,
   onSelect,
 }: {
-  items: Station[];
-  inputRef: React.RefObject<HTMLInputElement>;
-  onSelect: (s: Station) => void;
+items: Station [];
+inputRef: React.RefObject<HTMLInputElement | null>;
+onSelect: (s: Station) => void;
 }) {
   const [style, setStyle] = useState<React.CSSProperties>({});
 
@@ -149,7 +149,7 @@ function ResultModal({
 
         <div className="modal-divider" />
 
-        <div className="modal-promo-text">Kan du gissa dagens svenska glosor?</div>
+        <div className="modal-promo-text">KAN DU GISSA DAGENS ORD?</div>
         <a
           href="https://glosdle.svenskadle.se"
           target="_blank"
@@ -656,24 +656,7 @@ export default function TubdlePage() {
                 </div>
               )}
 
-              {/* GLOSDLE CROSS-PROMO (under bannern, visas alltid) */}
-              <div className="glosdle-promo-banner">
-                <div className="glosdle-promo-inner">
-                  <div className="glosdle-promo-emoji">📝</div>
-                  <div className="glosdle-promo-text">
-                    <div className="glosdle-promo-title">Kan du gissa dagens svenska ord?</div>
-                    <div className="glosdle-promo-sub">Spela Glosdle – nytt ord varje dag!</div>
-                  </div>
-                  <a
-                    href="https://glosdle.svenskadle.se"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="glosdle-promo-btn"
-                  >
-                    📝 SPELA GLOSDLE
-                  </a>
-                </div>
-              </div>
+
             </div>
           )}
         </div>
@@ -692,6 +675,19 @@ export default function TubdlePage() {
 
         {/* EST. BY SHURDA */}
         <div className="est-text">Est. by Shurda.</div>
+
+        {/* MOBILKNAPP – visas längst ned på små skärmar (≤1250px) */}
+        <div className="glosdle-mobile-bottom">
+          <a
+            href="https://glosdle.svenskadle.se"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="glosdle-sidebar-link"
+          >
+            <span className="glosdle-sidebar-icon">📝</span>
+            <span className="glosdle-sidebar-label">SPELA GLOSDLE</span>
+          </a>
+        </div>
       </div>
 
 
