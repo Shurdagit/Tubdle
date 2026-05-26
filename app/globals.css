@@ -379,22 +379,14 @@ body {
 .guess-btn:active { transform: scale(0.98); }
 .guess-btn:disabled { background: var(--lavender-touch); cursor: not-allowed; transform: none; }
 
+/* ── AUTOCOMPLETE ── */
 .autocomplete-list {
-  position: absolute;
-  top: 68px;
-  left: 0;
-  right: 120px;
   background: #fff;
   border: 1px solid var(--lavender-touch);
   border-radius: 12px;
-  z-index: 100;
-  max-height: 300px;
   overflow-y: auto;
   box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-}
-
-@media (max-width: 600px) {
-  .autocomplete-list { top: 58px; right: 90px; }
+  /* z-index satt inline via style-prop i komponenten (99999) */
 }
 
 .autocomplete-item {
@@ -573,7 +565,6 @@ body {
   padding: 2rem;
   border-radius: 16px;
   margin-top: 2rem;
-  animation: slideIn 0.4s ease;
 }
 
 .win-banner  { background: #E8F5E9; border: 2px solid #A5D6A7; color: #1B5E20; }
@@ -652,23 +643,328 @@ body {
   animation: flipIn 0.6s ease-out both;
 }
 
-/* ========================================= */
-/* FÖRDRÖJNING AV VINST/FÖRLUST-BANNER       */
-/* ========================================= */
-
+/* ── FÖRDRÖJNING AV VINST/FÖRLUST-BANNER ── */
 @keyframes popInDelayed {
-  0% {
-    opacity: 0;
-    transform: translateY(20px); /* Börjar lite längre ner */
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  0%   { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 .win-banner, .lose-banner {
-  /* 0.5s är hur snabbt den dyker upp, 2.3s är väntetiden */
-  /* "both" är jätteviktig! Den tvingar rutan att vara osynlig (opacity 0) under väntetiden */
   animation: popInDelayed 0.5s ease-out 2.3s both !important;
-} 
+}
+
+/* ── OUTER LAYOUT ── */
+.outer-layout {
+  /* Sidebar är position:fixed, spelrutan centreras av margin:auto på page-wrap */
+}
+
+/* ── GLOSDLE SIDEBAR ── */
+.glosdle-sidebar {
+  position: fixed;
+  /* Placeras en liten bit till vänster om den centrerade spelrutan.
+     50vw = mitten av sidan, 450px = halva max-width för game-card,
+     12px = litet mellanrum */
+  left: max(8px, calc(50vw - 450px - 12px - 110px));
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 200;
+}
+
+.glosdle-sidebar-link {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  background: #4CAF50;
+  border: 1.5px solid #388E3C;
+  border-radius: 30px;
+  padding: 12px 16px;
+  text-decoration: none;
+  color: #ffffff;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
+  white-space: nowrap;
+}
+
+.glosdle-sidebar-link:hover {
+  background: #43A047;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.45);
+}
+
+.glosdle-sidebar-icon { font-size: 22px; line-height: 1; }
+
+.glosdle-sidebar-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #ffffff;
+  line-height: 1.5;
+}
+
+@media (max-width: 1000px) {
+  .glosdle-sidebar { display: none; }
+}
+
+@media (prefers-color-scheme: dark) {
+  .glosdle-sidebar-link { background: #4CAF50; border-color: #2a3050; color: #fff; }
+  .glosdle-sidebar-label { color: #fff; }
+}
+
+/* ── GLOSDLE PROMO-BANNER ── */
+.glosdle-promo-banner {
+  margin-top: 16px;
+  background: rgba(180,188,164,0.25);
+  border: 1.5px solid var(--dusk-green);
+  border-radius: 16px;
+  padding: 16px 20px;
+  animation: popInDelayed 0.5s ease-out 2.3s both;
+}
+
+.glosdle-promo-inner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.glosdle-promo-emoji { font-size: 28px; flex-shrink: 0; }
+
+.glosdle-promo-text { flex: 1; min-width: 140px; }
+
+.glosdle-promo-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.glosdle-promo-sub { font-size: 13px; color: #555; margin-top: 2px; }
+
+.glosdle-promo-btn {
+  display: inline-block;
+  background: #1565C0;
+  color: #fff;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.18s, transform 0.12s;
+  flex-shrink: 0;
+}
+
+.glosdle-promo-btn:hover { background: #0d47a1; transform: translateY(-2px); }
+
+@media (max-width: 600px) {
+  .glosdle-promo-inner { gap: 10px; }
+  .glosdle-promo-title { font-size: 13px; }
+  .glosdle-promo-btn { font-size: 11px; padding: 8px 14px; width: 100%; text-align: center; }
+}
+
+@media (prefers-color-scheme: dark) {
+  .glosdle-promo-banner { background: rgba(30,30,30,0.6); border-color: #444; }
+  .glosdle-promo-title { color: #eee; }
+  .glosdle-promo-sub { color: #aaa; }
+}
+
+/* ══════════════════════════════════════════════════════════ */
+/* ── RESULTAT-MODAL                                       ── */
+/* ══════════════════════════════════════════════════════════ */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(24px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 50000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.25s ease;
+  /* Overlay ska ALLTID ligga ovanpå footern och est-text */
+}
+
+.modal-card {
+  background: #f0ece2;
+  border: 1.5px solid var(--lavender-touch);
+  border-radius: 22px;
+  padding: 2rem 2rem 1.8rem;
+  max-width: 400px;
+  width: 100%;
+  position: relative;
+  text-align: center;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
+  animation: slideUp 0.3s ease;
+}
+
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: rgba(0, 0, 0, 0.08);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  color: #333;
+}
+
+.modal-close:hover { background: rgba(0, 0, 0, 0.18); }
+
+.modal-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.modal-answer {
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.modal-answer-name {
+  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+  color: #B71C1C;
+  font-size: 17px;
+}
+
+/* Stationslista i resultat-modal */
+.modal-stations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.modal-station-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  text-align: left;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+/* Rätt station – grön */
+.modal-station-row.station-correct {
+  background: #2E7D32;
+}
+
+/* Fel station – mörk, diskret */
+.modal-station-row.station-wrong {
+  background: #4a4a4a;
+}
+
+.modal-station-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid rgba(255,255,255,0.35);
+}
+
+.modal-divider {
+  border: none;
+  border-top: 1px solid var(--lavender-touch);
+  margin: 14px 0;
+}
+
+.modal-timer-section { margin-bottom: 0; }
+
+.modal-timer-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  color: #888;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.modal-timer-value {
+  font-family: 'Space Mono', monospace;
+  font-size: 30px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 1px;
+}
+
+.modal-promo-text {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 12px;
+}
+
+.modal-promo-btn {
+  display: inline-block;
+  background: #1565C0;
+  color: #fff;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 12px 28px;
+  border-radius: 30px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.18s, transform 0.12s;
+  box-shadow: 0 4px 14px rgba(21, 101, 192, 0.35);
+}
+
+.modal-promo-btn:hover {
+  background: #0d47a1;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(21, 101, 192, 0.45);
+}
+
+
+
+@media (max-width: 600px) {
+  .modal-card { padding: 1.6rem 1.2rem 1.4rem; border-radius: 16px; }
+  .modal-title { font-size: 17px; }
+  .modal-station-row { font-size: 13px; padding: 8px 12px; }
+  .modal-timer-value { font-size: 24px; }
+  .modal-promo-btn { width: 100%; text-align: center; font-size: 12px; }
+}
+
+@media (prefers-color-scheme: dark) {
+  .modal-card { background: rgba(36, 36, 36, 0.98); border-color: #444; }
+  .modal-title { color: #eee; }
+  .modal-answer { color: #aaa; }
+  .modal-timer-value { color: #eee; }
+  .modal-promo-text { color: #aaa; }
+  .modal-close { background: rgba(255,255,255,0.08); color: #ddd; }
+  .modal-close:hover { background: rgba(255,255,255,0.16); }
+}
