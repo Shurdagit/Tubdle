@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { createPortal } from 'react-dom';
 import {
   STATIONS,
   LINE_TOOLTIPS,
@@ -14,60 +13,17 @@ import {
   getDistDisplay,
 } from './data';
 
-// ─── AUTOCOMPLETE PORTAL (renderas utanför game-card, över allt) ─────────────
-function AutocompletePortal({
+import { createPortal } from 'react-dom';
+// ─── AUTOCOMPLETE (inline, följer inputen vid scroll) ────────────────────────
+function AutocompleteList({
   items,
-  inputRef,
   onSelect,
 }: {
-items: Station [];
-inputRef: React.RefObject<HTMLInputElement | null>;
-onSelect: (s: Station) => void;
+  items: Station[];
+  onSelect: (s: Station) => void;
 }) {
-  const [style, setStyle] = useState<React.CSSProperties>({});
-
-  useEffect(() => {
-    function updatePos() {
-      if (!inputRef.current) return;
-      const rect = inputRef.current.getBoundingClientRect();
-      const spaceBelow = window.innerHeight - rect.bottom - 20;
-      const spaceAbove = rect.top - 20;
-
-      if (spaceBelow >= 120 || spaceBelow >= spaceAbove) {
-        // Visa nedåt, begränsa höjd till tillgängligt utrymme
-        setStyle({
-          position: 'fixed',
-          top: rect.bottom + 6,
-          left: rect.left,
-          width: rect.width,
-          maxHeight: Math.max(spaceBelow - 10, 80),
-          zIndex: 99999,
-        });
-      } else {
-        // Flippa uppåt om mer plats ovanför
-        const availableAbove = Math.min(spaceAbove - 10, 300);
-        setStyle({
-          position: 'fixed',
-          top: rect.top - availableAbove - 6,
-          left: rect.left,
-          width: rect.width,
-          maxHeight: Math.max(availableAbove, 80),
-          zIndex: 99999,
-        });
-      }
-    }
-    updatePos();
-    window.addEventListener('resize', updatePos);
-    window.addEventListener('scroll', updatePos, true);
-    return () => {
-      window.removeEventListener('resize', updatePos);
-      window.removeEventListener('scroll', updatePos, true);
-    };
-  }, [inputRef]);
-
-  if (typeof document === 'undefined') return null;
-  return createPortal(
-    <div className="autocomplete-list" style={style}>
+  return (
+    <div className="autocomplete-list">
       {items.map((s) => (
         <div
           key={s.name}
@@ -82,8 +38,7 @@ onSelect: (s: Station) => void;
           {s.name}
         </div>
       ))}
-    </div>,
-    document.body
+    </div>
   );
 }
 
@@ -328,6 +283,44 @@ export default function TubdlePage() {
     return () => document.removeEventListener('click', handler);
   }, []);
 
+  // ── Est. by Shurda – trycks ned av mobilknapp eller footer ───────────────
+  useEffect(() => {
+    function updateEstPos() {
+      const est = document.querySelector('.est-text') as HTMLElement;
+      if (!est) return;
+
+      // Kolla mobilknappen först (synlig på ≤1250px), annars footern
+      const mobileBtn  = document.querySelector('.glosdle-mobile-bottom') as HTMLElement;
+      const footerBox  = document.querySelector('.footer-container')      as HTMLElement;
+      const ref = (mobileBtn && mobileBtn.offsetParent !== null)
+        ? mobileBtn
+        : footerBox;
+      if (!ref) return;
+
+      const rect       = ref.getBoundingClientRect();
+      const estHeight  = est.offsetHeight || 20;
+      const gap        = 5;
+
+      if (rect.bottom + gap + estHeight >= window.innerHeight) {
+        est.style.position = 'absolute';
+        est.style.bottom   = 'auto';
+        est.style.top      = (window.scrollY + rect.bottom + gap) + 'px';
+      } else {
+        est.style.position = 'fixed';
+        est.style.top      = 'auto';
+        est.style.bottom   = '5px';
+      }
+    }
+
+    updateEstPos();
+    window.addEventListener('scroll', updateEstPos);
+    window.addEventListener('resize', updateEstPos);
+    return () => {
+      window.removeEventListener('scroll', updateEstPos);
+      window.removeEventListener('resize', updateEstPos);
+    };
+  }, []);
+
   // ── Stäng tooltip på mobil vid klick utanför ─────────────────────────────
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -430,38 +423,7 @@ export default function TubdlePage() {
     setOpenTooltipIdx((prev) => (prev === idx ? null : idx));
   }
 
-  useEffect(() => {
-    function updateEstPos() {
-      const est = document.querySelector('.est-text') as HTMLElement;
-      const footerBox = document.querySelector('.footer-container') as HTMLElement;
-      
-      if (!est || !footerBox) return;
-      
-      const footerRect = footerBox.getBoundingClientRect();
-      const gap = 5;
-      const windowHeight = window.innerHeight;
-      const estHeight = est.offsetHeight || 20;
-      
-      if (footerRect.bottom + gap + estHeight >= windowHeight) {
-        est.style.position = 'absolute';
-        est.style.bottom = 'auto';
-        est.style.top = (window.scrollY + footerRect.bottom + gap) + 'px';
-      } else {
-        est.style.position = 'fixed';
-        est.style.top = 'auto';
-        est.style.bottom = '5px';
-      }
-    }
 
-    window.addEventListener('scroll', updateEstPos);
-    window.addEventListener('resize', updateEstPos);
-    setTimeout(updateEstPos, 100);
-
-    return () => {
-      window.removeEventListener('scroll', updateEstPos);
-      window.removeEventListener('resize', updateEstPos);
-    };
-  }, []);
 
   // ── RENDER ────────────────────────────────────────────────────────────────
   return (
@@ -475,7 +437,7 @@ export default function TubdlePage() {
           className="glosdle-sidebar-link"
         >
           <span className="glosdle-sidebar-icon">📝</span>
-          <span className="glosdle-sidebar-label">SPELA<br />GLOSDLE</span>
+          <span className="glosdle-sidebar-label">SPELA GLOSDLE</span>
         </a>
       </aside>
 
@@ -547,27 +509,28 @@ export default function TubdlePage() {
 
           {/* INPUT */}
           <div className="input-row">
-            <input
-              ref={inputRef}
-              className="station-input"
-              type="text"
-              placeholder="Skriv en station..."
-              autoComplete="off"
-              value={inputValue}
-              onChange={handleInput}
-              onKeyDown={handleKeyDown}
-              disabled={gameOver}
-            />
+            <div className="input-wrap">
+              <input
+                ref={inputRef}
+                className="station-input"
+                type="text"
+                placeholder="Skriv en station..."
+                autoComplete="off"
+                value={inputValue}
+                onChange={handleInput}
+                onKeyDown={handleKeyDown}
+                disabled={gameOver}
+              />
+              {showAutocomplete && (
+                <AutocompleteList
+                  items={autocompleteItems}
+                  onSelect={selectStation}
+                />
+              )}
+            </div>
             <button className="guess-btn" onClick={makeGuess} disabled={gameOver}>
               GISSA
             </button>
-            {showAutocomplete && (
-              <AutocompletePortal
-                items={autocompleteItems}
-                inputRef={inputRef}
-                onSelect={selectStation}
-              />
-            )}
           </div>
 
           {/* MELLANSEKTIONEN */}
@@ -673,10 +636,10 @@ export default function TubdlePage() {
           </div>
         </div>
 
-        {/* EST. BY SHURDA */}
+        {/* EST. BY SHURDA – always fixed at bottom via CSS */}
         <div className="est-text">Est. by Shurda.</div>
 
-        {/* MOBILKNAPP – visas längst ned på små skärmar (≤1250px) */}
+        {/* MOBILKNAPP – fixed ovanför est-text på små skärmar (≤1250px) */}
         <div className="glosdle-mobile-bottom">
           <a
             href="https://glosdle.svenskadle.se"
