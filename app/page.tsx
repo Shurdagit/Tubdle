@@ -113,6 +113,15 @@ function ResultModal({
         >
           📝 SPELA GLOSDLE
         </a>
+        <div className="modal-promo-text" style={{ marginTop: '12px' }}>KAN DU LISTA UT DAGENS TAL?</div>
+        <a
+          href="https://taldle.svenskadle.se"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="modal-promo-btn modal-taldle-btn"
+        >
+          🔢 SPELA TALDLE
+        </a>
       </div>
     </div>,
     document.body
@@ -439,6 +448,15 @@ export default function TubdlePage() {
           <span className="glosdle-sidebar-icon">📝</span>
           <span className="glosdle-sidebar-label">SPELA GLOSDLE</span>
         </a>
+        <a
+          href="https://taldle.svenskadle.se"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="glosdle-sidebar-link taldle-sidebar-link"
+        >
+          <span className="glosdle-sidebar-icon">🔢</span>
+          <span className="glosdle-sidebar-label">SPELA TALDLE</span>
+        </a>
       </aside>
 
       <div className="page-wrap">
@@ -649,6 +667,15 @@ export default function TubdlePage() {
           >
             <span className="glosdle-sidebar-icon">📝</span>
             <span className="glosdle-sidebar-label">SPELA GLOSDLE</span>
+          </a>
+          <a
+            href="https://taldle.svenskadle.se"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="glosdle-sidebar-link taldle-sidebar-link"
+          >
+            <span className="glosdle-sidebar-icon">🔢</span>
+            <span className="glosdle-sidebar-label">SPELA TALDLE</span>
           </a>
         </div>
       </div>
